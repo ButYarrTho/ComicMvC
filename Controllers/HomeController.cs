@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using ComicMvC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComicMvC.Controllers
@@ -13,11 +14,14 @@ namespace ComicMvC.Controllers
             _logger = logger;
         }
 
+        // Allow anonymous access so that the home page is visible to unauthenticated users.
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult Privacy()
         {
             return View();

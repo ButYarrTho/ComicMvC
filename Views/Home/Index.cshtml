@@ -2,7 +2,15 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h2>Welcome to ComicMvC</h2>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <p>Please log in to access the full functionality of the site.</p>
+    <a href="/Account/Login" class="btn btn-primary">Login with Google</a>
+}
+else
+{
+    <p>Welcome, @User.Identity.Name!</p>
+    <a href="/Account/Logout" class="btn btn-secondary">Logout</a>
+}

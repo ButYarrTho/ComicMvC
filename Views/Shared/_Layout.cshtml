@@ -29,6 +29,7 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Comics" asp-action="Index">Comics</a>
                         </li>
+                      
 
                         <!-- Dropdown Menu for Remaining Tabs -->
                         <li class="nav-item dropdown">
@@ -46,7 +47,18 @@
                             </ul>
                         </li>
                     </ul>
+                 
                 </div>
+                <li>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <a href="/Account/Login" class="btn btn-primary">Login with Google</a>
+                    }
+                    else
+                    {
+                        <a href="/Account/Logout" class="btn btn-secondary">Logout</a>
+                    }
+                </li>
             </div>
         </nav>
     </header>

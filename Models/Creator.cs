@@ -15,6 +15,5 @@ namespace ComicMvC.Models
         public string Role { get; set; }
 
         // Navigation property for many-to-many relationship with Comics
-        public ICollection<ComicCreator> ComicCreators { get; set; }
     }
 }

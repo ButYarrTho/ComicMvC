@@ -248,44 +248,6 @@ namespace ComicMvC.Models
                 context.SaveChanges();
 
                 // --------------------------
-                // Relationships: ComicCharacters
-                // --------------------------
-                context.Set<ComicCharacter>().AddRange(
-                    new ComicCharacter { ComicId = comic1.ComicId, CharacterId = character1.CharacterId },
-                    new ComicCharacter { ComicId = comic1.ComicId, CharacterId = character2.CharacterId },
-                    new ComicCharacter { ComicId = comic2.ComicId, CharacterId = character1.CharacterId },
-                    new ComicCharacter { ComicId = comic3.ComicId, CharacterId = character3.CharacterId },
-                    new ComicCharacter { ComicId = comic3.ComicId, CharacterId = character4.CharacterId },
-                    new ComicCharacter { ComicId = comic4.ComicId, CharacterId = character5.CharacterId },
-                    new ComicCharacter { ComicId = comic5.ComicId, CharacterId = character6.CharacterId },
-                    new ComicCharacter { ComicId = comic6.ComicId, CharacterId = character7.CharacterId },
-                    new ComicCharacter { ComicId = comic6.ComicId, CharacterId = character8.CharacterId },
-                    new ComicCharacter { ComicId = comic7.ComicId, CharacterId = character9.CharacterId },
-                    new ComicCharacter { ComicId = comic8.ComicId, CharacterId = character10.CharacterId },
-                    new ComicCharacter { ComicId = comic9.ComicId, CharacterId = character5.CharacterId },
-                    new ComicCharacter { ComicId = comic10.ComicId, CharacterId = character1.CharacterId }
-                );
-
-                // --------------------------
-                // Relationships: ComicCreators
-                // --------------------------
-                context.Set<ComicCreator>().AddRange(
-                    new ComicCreator { ComicId = comic1.ComicId, CreatorId = creator1.CreatorId },
-                    new ComicCreator { ComicId = comic1.ComicId, CreatorId = creator2.CreatorId },
-                    new ComicCreator { ComicId = comic2.ComicId, CreatorId = creator1.CreatorId },
-                    new ComicCreator { ComicId = comic3.ComicId, CreatorId = creator3.CreatorId },
-                    new ComicCreator { ComicId = comic3.ComicId, CreatorId = creator7.CreatorId },
-                    new ComicCreator { ComicId = comic4.ComicId, CreatorId = creator4.CreatorId },
-                    new ComicCreator { ComicId = comic5.ComicId, CreatorId = creator5.CreatorId },
-                    new ComicCreator { ComicId = comic6.ComicId, CreatorId = creator9.CreatorId },
-                    new ComicCreator { ComicId = comic7.ComicId, CreatorId = creator8.CreatorId },
-                    new ComicCreator { ComicId = comic8.ComicId, CreatorId = creator10.CreatorId },
-                    new ComicCreator { ComicId = comic9.ComicId, CreatorId = creator4.CreatorId },
-                    new ComicCreator { ComicId = comic10.ComicId, CreatorId = creator1.CreatorId },
-                    new ComicCreator { ComicId = comic10.ComicId, CreatorId = creator6.CreatorId }
-                );
-
-                // --------------------------
                 // Users
                 // --------------------------
                 context.Users.AddRange(

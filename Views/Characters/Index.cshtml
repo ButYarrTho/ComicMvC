@@ -1,37 +1,71 @@
 ﻿@model IEnumerable<ComicMvC.Models.Character>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Characters";
 }
 
-<h1>Index</h1>
+<!-- Comic-Style Title -->
+<div class="text-center my-5">
+    <h1 class="display-3 text-warning fw-bold" style="font-family: 'Bangers', cursive; text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);">
+        Meet the Heroes & Villains!
+    </h1>
+    <p class="lead">Explore legendary characters from the world of comics.</p>
+</div>
 
-<p><a asp-action="Create" class="link-body-emphasis">Create New</a></p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Alias</th>
-            <th>Description</th>
-            <th>First Appearance</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
+<!-- Character Grid Without Images -->
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach (var item in Model)
         {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Alias)</td>
-                <td>@Html.DisplayFor(modelItem => item.Description)</td>
-                <td>@Html.DisplayFor(modelItem => item.FirstAppearanceComic.Title)</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.CharacterId" class="link-info">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.CharacterId" class="link-warning">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.CharacterId" class="link-danger">Delete</a>
-                </td>
-            </tr>
+            <div class="col">
+                <div class="card border border-dark shadow-lg comic-card bg-light">
+                    <div class="card-body text-dark">
+                        <h3 class="card-title text-primary fw-bold" style="font-family: 'Bangers', cursive;">
+                            @item.Name
+                        </h3>
+                        <p><strong>Alias:</strong> @item.Alias</p>
+                        <p><strong>First Appearance:</strong> @item.FirstAppearanceComic.Title</p>
+                        <p class="text-muted">@item.Description</p>
+
+                        <!-- Comic-Style Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@item.CharacterId" class="btn btn-warning fw-bold border border-dark">Details</a>
+                            <a asp-action="Edit" asp-route-id="@item.CharacterId" class="btn btn-primary fw-bold border border-dark">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.CharacterId" class="btn btn-danger fw-bold border border-dark">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>
+
+<!-- Comic-Style Add Button -->
+<div class="text-center my-4">
+    <a asp-action="Create" class="btn btn-success btn-lg fw-bold border border-dark" style="font-family: 'Bangers', cursive;">
+        + Add a New Character
+    </a>
+</div>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Custom Styles -->
+<style>
+    .comic-card {
+        border-width: 3px;
+        padding: 20px;
+        transition: transform 0.2s ease-in-out;
+        background-color: #fffded; /* Light yellow like comic pages */
+    }
+
+        .comic-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+    .btn {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>

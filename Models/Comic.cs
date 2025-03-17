@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ComicMvC.Models
 {
@@ -32,8 +32,8 @@ namespace ComicMvC.Models
 
         public string Synopsis { get; set; }
 
-        // Navigation properties for many-to-many relationships
-        public ICollection<ComicCharacter> ComicCharacters { get; set; }
-        public ICollection<ComicCreator> ComicCreators { get; set; }
+        // Removed: Navigation properties for many-to-many relationships.
+        // public ICollection<ComicCharacter> ComicCharacters { get; set; }
+        // public ICollection<ComicCreator> ComicCreators { get; set; }
     }
 }

@@ -7,41 +7,65 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create" class="link-body-emphasis">Create New</a>
+    <a asp-action="Create">Create New</a>
 </p>
-
 <table class="table">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.Title)</th>
-            <th>@Html.DisplayNameFor(model => model.IssueNumber)</th>
-            <th>@Html.DisplayNameFor(model => model.ReleaseDate)</th>
-            <th>@Html.DisplayNameFor(model => model.Publisher)</th>
-            <th>@Html.DisplayNameFor(model => model.Genre)</th>
-            <th>@Html.DisplayNameFor(model => model.CoverImageUrl)</th>
-            <th>@Html.DisplayNameFor(model => model.Synopsis)</th>
-            <th>Actions</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IssueNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReleaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Publisher)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Genre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CoverImageUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Synopsis)
+            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Title)</td>
-                <td>@Html.DisplayFor(modelItem => item.IssueNumber)</td>
-                <td>@Html.DisplayFor(modelItem => item.ReleaseDate)</td>
-                <td>@Html.DisplayFor(modelItem => item.Publisher.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Genre.GenreName)</td>
-                <td>
-                    <img src="@item.CoverImageUrl" alt="Cover Image" style="width: 50px; height: auto;" />
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.Synopsis)</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ComicId" class="link-info">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ComicId" class="link-warning">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ComicId" class="link-danger">Delete</a>
-                </td>
-            </tr>
-        }
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IssueNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Publisher.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Genre.GenreName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CoverImageUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Synopsis)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ComicId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ComicId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ComicId">Delete</a>
+            </td>
+        </tr>
+}
     </tbody>
 </table>

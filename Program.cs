@@ -1,35 +1,45 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ComicMvC.Data;
 using ComicMvC.Models;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+})
+.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ComicValidator>());
 
-// Register your DbContext.
+// Register your DbContext with retry logic for transient failures.
 builder.Services.AddDbContext<ComicsContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ComicMvCContext")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("ComicMvCContext"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure()
+    ));
 
-// Configure Authentication: Use cookies as the default scheme and Google for external login.
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
-.AddCookie() // This will persist the user identity in a cookie.
+.AddCookie() 
 .AddGoogle(options =>
 {
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    // Optional: customize additional options such as CallbackPath if needed.
 });
 
 var app = builder.Build();
 
-// Seed the database (if applicable)
+// Seed the database.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -37,7 +47,11 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
@@ -46,7 +60,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Add authentication and authorization middleware.
 app.UseAuthentication();
 app.UseAuthorization();
 

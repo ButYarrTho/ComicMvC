@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ComicMvC.Models
 {
@@ -22,7 +22,7 @@ namespace ComicMvC.Models
         [ForeignKey("FirstAppearanceComicId")]
         public Comic FirstAppearanceComic { get; set; }
 
-        // Navigation property for many-to-many relationship with Comics
-        public ICollection<ComicCharacter> ComicCharacters { get; set; }
+        // Removed: Navigation property for many-to-many relationship with Comics.
+        // public ICollection<ComicCharacter> ComicCharacters { get; set; }
     }
 }

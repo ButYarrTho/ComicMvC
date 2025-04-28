@@ -53,3 +53,33 @@
 <div class="container text-center text-muted mt-5">
     <p>&copy; @DateTime.Now.Year - ComicMvC. All rights reserved.</p>
 </div>
+
+
+
+<div class="container">
+    <h2 class="text-center mb-4">Find Comic Book Stores Near You</h2>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAbq6Nlk02ndUKr9g6naxI4aJbsCrrkR7k&callback=initMap" async defer></script>
+
+<script>
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 7,
+            center: { lat: 53.3498, lng: -6.2603 } // Center on Dublin
+        });
+
+        fetch('/api/comicstore')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(store => {
+                    new google.maps.Marker({
+                        position: { lat: store.latitude, lng: store.longitude },
+                        map: map,
+                        title: store.name
+                    });
+                });
+            });
+    }
+</script>

@@ -74,7 +74,7 @@ using (var scope = app.Services.CreateScope())
     SeedData.Initialize(services);
 }
 
-// 7. Configure the HTTP request pipeline
+// 7. Configure the HTTP request pipeline 
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

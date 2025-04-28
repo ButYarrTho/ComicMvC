@@ -9,9 +9,10 @@ using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Register IHttpContextAccessor so we can read session in views/layout
 builder.Services.AddHttpContextAccessor();
 
-//Add  memory cache & session support.
+// 2. Add in-memory cache & session support
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -20,22 +21,29 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddControllersWithViews(options =>
-{
-    var policy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-    options.Filters.Add(new AuthorizeFilter(policy));
-})
-.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ComicValidator>());
+//// 3. Add MVC with a global “require authenticated user” policy,
+////    and register FluentValidation validators
+//builder.Services.AddControllersWithViews(options =>
+//{
+//    var policy = new AuthorizationPolicyBuilder()
+//        .RequireAuthenticatedUser()
+//        .Build();
+//    options.Filters.Add(new AuthorizeFilter(policy));
+//})
+//.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ComicValidator>());
 
-// Register your DbContext with retry logic for transient failures.
+// 3. Add MVC and register FluentValidation validators
+builder.Services.AddControllersWithViews()
+    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ComicValidator>());
+
+// 4. Register your DbContext with SQL Server and retry on failure
 builder.Services.AddDbContext<ComicsContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("ComicMvCContext"),
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
 
+// 5. Configure authentication: cookies + Google OAuth
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -48,16 +56,25 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RegisteredOnly", policy =>
+        policy.RequireAuthenticatedUser());
+
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
+
 var app = builder.Build();
 
-// Seed the database.
+// 6. Seed the database on startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     SeedData.Initialize(services);
 }
 
-// Configure the HTTP request pipeline.
+// 7. Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -72,12 +89,13 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// 3. Enable Session before Authentication and Authorization
+// 8. Enable session before auth middleware
 app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+// 9. Map default controller route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

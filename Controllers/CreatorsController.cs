@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ComicMvC.Data;
 using ComicMvC.Models;
@@ -19,40 +17,31 @@ namespace ComicMvC.Controllers
             _context = context;
         }
 
-        // GET: Creators
+        // Anyone can view the list
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Creators.ToListAsync());
         }
 
-        // GET: Creators/Details/5
+        // Anyone can view details
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var creator = await _context.Creators
-                .FirstOrDefaultAsync(m => m.CreatorId == id);
-            if (creator == null)
-            {
-                return NotFound();
-            }
+            var creator = await _context.Creators.FirstOrDefaultAsync(m => m.CreatorId == id);
+            if (creator == null) return NotFound();
 
             return View(creator);
         }
 
-        // GET: Creators/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        // Only registered users can create
+        [Authorize(Policy = "RegisteredOnly")]
+        public IActionResult Create() => View();
 
-        // POST: Creators/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Policy = "RegisteredOnly")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CreatorId,FullName,Role")] Creator creator)
         {
@@ -65,33 +54,24 @@ namespace ComicMvC.Controllers
             return View(creator);
         }
 
-        // GET: Creators/Edit/5
+        // Only registered users can edit
+        [Authorize(Policy = "RegisteredOnly")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var creator = await _context.Creators.FindAsync(id);
-            if (creator == null)
-            {
-                return NotFound();
-            }
+            if (creator == null) return NotFound();
+
             return View(creator);
         }
 
-        // POST: Creators/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Policy = "RegisteredOnly")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CreatorId,FullName,Role")] Creator creator)
         {
-            if (id != creator.CreatorId)
-            {
-                return NotFound();
-            }
+            if (id != creator.CreatorId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -102,40 +82,28 @@ namespace ComicMvC.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CreatorExists(creator.CreatorId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!CreatorExists(creator.CreatorId)) return NotFound();
+                    throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(creator);
         }
 
-        // GET: Creators/Delete/5
+        // Only registered users can delete
+        [Authorize(Policy = "RegisteredOnly")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var creator = await _context.Creators
-                .FirstOrDefaultAsync(m => m.CreatorId == id);
-            if (creator == null)
-            {
-                return NotFound();
-            }
+            var creator = await _context.Creators.FirstOrDefaultAsync(m => m.CreatorId == id);
+            if (creator == null) return NotFound();
 
             return View(creator);
         }
 
-        // POST: Creators/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Policy = "RegisteredOnly")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -143,15 +111,12 @@ namespace ComicMvC.Controllers
             if (creator != null)
             {
                 _context.Creators.Remove(creator);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CreatorExists(int id)
-        {
-            return _context.Creators.Any(e => e.CreatorId == id);
-        }
+        private bool CreatorExists(int id) =>
+            _context.Creators.Any(e => e.CreatorId == id);
     }
 }

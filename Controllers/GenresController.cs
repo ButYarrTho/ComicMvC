@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ComicMvC.Data;
 using ComicMvC.Models;
@@ -19,40 +17,31 @@ namespace ComicMvC.Controllers
             _context = context;
         }
 
-        // GET: Genres
+        // Anyone can view
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Genres.ToListAsync());
         }
 
-        // GET: Genres/Details/5
+        // Anyone can view details
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var genre = await _context.Genres
-                .FirstOrDefaultAsync(m => m.GenreId == id);
-            if (genre == null)
-            {
-                return NotFound();
-            }
+            var genre = await _context.Genres.FirstOrDefaultAsync(m => m.GenreId == id);
+            if (genre == null) return NotFound();
 
             return View(genre);
         }
 
-        // GET: Genres/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        // Only registered users can create
+        [Authorize(Policy = "RegisteredOnly")]
+        public IActionResult Create() => View();
 
-        // POST: Genres/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Policy = "RegisteredOnly")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("GenreId,GenreName")] Genre genre)
         {
@@ -65,33 +54,24 @@ namespace ComicMvC.Controllers
             return View(genre);
         }
 
-        // GET: Genres/Edit/5
+        // Only registered users can edit
+        [Authorize(Policy = "RegisteredOnly")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var genre = await _context.Genres.FindAsync(id);
-            if (genre == null)
-            {
-                return NotFound();
-            }
+            if (genre == null) return NotFound();
+
             return View(genre);
         }
 
-        // POST: Genres/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Policy = "RegisteredOnly")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("GenreId,GenreName")] Genre genre)
         {
-            if (id != genre.GenreId)
-            {
-                return NotFound();
-            }
+            if (id != genre.GenreId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -102,40 +82,28 @@ namespace ComicMvC.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!GenreExists(genre.GenreId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!GenreExists(genre.GenreId)) return NotFound();
+                    throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(genre);
         }
 
-        // GET: Genres/Delete/5
+        // Only registered users can delete
+        [Authorize(Policy = "RegisteredOnly")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var genre = await _context.Genres
-                .FirstOrDefaultAsync(m => m.GenreId == id);
-            if (genre == null)
-            {
-                return NotFound();
-            }
+            var genre = await _context.Genres.FirstOrDefaultAsync(m => m.GenreId == id);
+            if (genre == null) return NotFound();
 
             return View(genre);
         }
 
-        // POST: Genres/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Policy = "RegisteredOnly")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -143,15 +111,12 @@ namespace ComicMvC.Controllers
             if (genre != null)
             {
                 _context.Genres.Remove(genre);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool GenreExists(int id)
-        {
-            return _context.Genres.Any(e => e.GenreId == id);
-        }
+        private bool GenreExists(int id) =>
+            _context.Genres.Any(e => e.GenreId == id);
     }
 }

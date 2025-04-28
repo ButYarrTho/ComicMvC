@@ -1,10 +1,25 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿@using ComicMvC.Data
+@using ComicMvC.Models
+@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
+@inject ComicsContext Db
 
 @{
     ViewData["Title"] = ViewData["Title"] ?? "ComicMvC";
-    // Read the current cart count from session (default to 0)
-    var cartCount = HttpContextAccessor.HttpContext.Session.GetInt32("CartCount") ?? 0;
+
+    // Read cart IDs (List<int>) from session (or empty list)
+    var cartIds = HttpContextAccessor.HttpContext
+                     .Session
+                     .GetObjectFromJson<List<int>>("CartItems")
+                 ?? new List<int>();
+
+    // Load the corresponding comics
+    var cartComics = Db.Comics
+                       .Where(c => cartIds.Contains(c.ComicId))
+                       .ToList();
+
+    // Badge count
+    var cartCount = cartIds.Count;
 }
 
 <!DOCTYPE html>
@@ -22,8 +37,9 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ComicMvC</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-                        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
+                        aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -38,9 +54,9 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Comics" asp-action="Index">Comics</a>
                         </li>
-
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">
                                 More
                             </a>
                             <ul class="dropdown-menu">
@@ -52,14 +68,50 @@
                             </ul>
                         </li>
 
-                        <!-- Shopping Cart Link -->
-                        <li class="nav-item">
-                            <a class="nav-link position-relative" asp-controller="Shopping" asp-action="Index">
+                        <!-- Cart Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle position-relative"
+                               href="#" id="cartDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
                                 Cart
                                 <span class="badge bg-secondary position-absolute top-0 start-100 translate-middle">
                                     @cartCount
                                 </span>
                             </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown">
+                                @if (!cartComics.Any())
+                                {
+                                    <li class="dropdown-item text-muted">Cart is empty</li>
+                                }
+                                else
+                                {
+                                    @foreach (var comic in cartComics)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item"
+                                               asp-controller="Comics"
+                                               asp-action="Details"
+                                               asp-route-id="@comic.ComicId">
+                                                @comic.Title
+                                            </a>
+                                        </li>
+                                    }
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <a class="dropdown-item text-center" asp-controller="Cart" asp-action="Index">
+                                            View Full Cart
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <form asp-controller="Cart" asp-action="Clear" method="post" class="px-3">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger w-100">
+                                                Clear Cart
+                                            </button>
+                                        </form>
+                                    </li>
+                                }
+                            </ul>
                         </li>
                     </ul>
 
@@ -67,7 +119,7 @@
                         <li class="nav-item">
                             @if (!User.Identity.IsAuthenticated)
                             {
-                                <a href="/Account/Login" class="btn btn-primary">Login with Google</a>
+                                <a href="/Account/Login" class="btn btn-primary">Login</a>
                             }
                             else
                             {

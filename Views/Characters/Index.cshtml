@@ -7,7 +7,7 @@
 <!-- Comic-Style Title -->
 <div class="text-center my-5">
     <h1 class="display-3 text-warning fw-bold" style="font-family: 'Bangers', cursive; text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);">
-        Meet the Heroes & Villains!
+        Meet the Heroes &amp; Villains!
     </h1>
     <p class="lead">Explore legendary characters from the world of comics.</p>
 </div>
@@ -24,14 +24,26 @@
                             @item.Name
                         </h3>
                         <p><strong>Alias:</strong> @item.Alias</p>
-                        <p><strong>First Appearance:</strong> @item.FirstAppearanceComic.Title</p>
                         <p class="text-muted">@item.Description</p>
 
-                        <!-- Comic-Style Buttons -->
+                        <!-- Comic-Style Buttons (only for logged-in users) -->
                         <div class="d-flex justify-content-between">
-                            <a asp-action="Details" asp-route-id="@item.CharacterId" class="btn btn-warning fw-bold border border-dark">Details</a>
-                            <a asp-action="Edit" asp-route-id="@item.CharacterId" class="btn btn-primary fw-bold border border-dark">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.CharacterId" class="btn btn-danger fw-bold border border-dark">Delete</a>
+                            <a asp-action="Details" asp-route-id="@item.CharacterId"
+                               class="btn btn-warning fw-bold border border-dark">
+                                Details
+                            </a>
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.CharacterId"
+                                   class="btn btn-primary fw-bold border border-dark">
+                                    Edit
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.CharacterId"
+                                   class="btn btn-danger fw-bold border border-dark">
+                                    Delete
+                                </a>
+                            }
                         </div>
                     </div>
                 </div>
@@ -40,12 +52,16 @@
     </div>
 </div>
 
-<!-- Comic-Style Add Button -->
-<div class="text-center my-4">
-    <a asp-action="Create" class="btn btn-success btn-lg fw-bold border border-dark" style="font-family: 'Bangers', cursive;">
-        + Add a New Character
-    </a>
-</div>
+<!-- Comic-Style Add Button (only for logged-in users) -->
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="text-center my-4">
+        <a asp-action="Create" class="btn btn-success btn-lg fw-bold border border-dark"
+           style="font-family: 'Bangers', cursive;">
+            + Add a New Character
+        </a>
+    </div>
+}
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
@@ -56,7 +72,7 @@
         border-width: 3px;
         padding: 20px;
         transition: transform 0.2s ease-in-out;
-        background-color: #fffded; /* Light yellow like comic pages */
+        background-color: #fffded;
     }
 
         .comic-card:hover {

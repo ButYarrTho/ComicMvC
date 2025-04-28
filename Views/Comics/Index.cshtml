@@ -11,11 +11,15 @@
     <p class="lead text-dark">Dive into a collection of legendary comic issues and their epic stories.</p>
 </div>
 
-<div class="text-center mb-4">
-    <a asp-action="Create" class="btn btn-success btn-lg comic-btn">
-        + Add a New Comic
-    </a>
-</div>
+<!-- Add New Comic (only for logged-in users) -->
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="text-center mb-4">
+        <a asp-action="Create" class="btn btn-success btn-lg comic-btn">
+            + Add a New Comic
+        </a>
+    </div>
+}
 
 <div class="container">
     <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -23,19 +27,29 @@
         {
             <div class="col">
                 <div class="card comic-card border border-dark shadow-lg">
-                    <div class="card-header bg-primary text-white fw-bold text-center" style="font-family: 'Bangers', cursive;">
+                    <div class="card-header bg-primary text-white fw-bold text-center"
+                         style="font-family: 'Bangers', cursive;">
                         @item.Title (#@item.IssueNumber)
                     </div>
                     <div class="card-body bg-light text-dark">
-                        <h5 class="card-title text-center text-warning">Published by @item.Publisher.Name</h5>
-                        <p><strong>Release Date:</strong> @Html.DisplayFor(modelItem => item.ReleaseDate)</p>
-                        <p><strong>Genre:</strong> @Html.DisplayFor(modelItem => item.Genre.GenreName)</p>
+                        <h5 class="card-title text-center text-warning">
+                            Published by @item.Publisher.Name
+                        </h5>
+                        <p><strong>Release Date:</strong> @item.ReleaseDate.ToShortDateString()</p>
+                        <p><strong>Genre:</strong> @item.Genre.GenreName</p>
                         <p class="text-muted"><strong>Synopsis:</strong> @item.Synopsis</p>
                     </div>
                     <div class="card-footer text-center">
-                        <a asp-action="Edit" asp-route-id="@item.ComicId" class="btn btn-primary comic-btn">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.ComicId" class="btn btn-warning comic-btn">Details</a>
-                        <a asp-action="Delete" asp-route-id="@item.ComicId" class="btn btn-danger comic-btn">Delete</a>
+                        <a asp-action="Details" asp-route-id="@item.ComicId"
+                           class="btn btn-warning comic-btn">Details</a>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.ComicId"
+                               class="btn btn-primary comic-btn">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.ComicId"
+                               class="btn btn-danger comic-btn">Delete</a>
+                        }
                     </div>
                 </div>
             </div>
